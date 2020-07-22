@@ -113,22 +113,98 @@ __Z_INLINE bool_t parser_isAmount(char *key)
     return bool_false;
 }
 
-__Z_INLINE bool_t is_default_denom_base(const char *denom, uint8_t denom_len)
+__Z_INLINE bool_t is_kava_denom_base(const char *denom, uint8_t denom_len)
 {
     if (tx_is_expert_mode())
     {
         return false;
     }
 
-    if (strlen(COIN_DEFAULT_DENOM_BASE) != denom_len)
+    if (strlen(KAVA_DENOM_BASE) != denom_len)
     {
         return bool_false;
     }
 
-    if (memcmp(denom, COIN_DEFAULT_DENOM_BASE, denom_len) == 0)
+    if (memcmp(denom, KAVA_DENOM_BASE, denom_len) == 0)
         return bool_true;
 
     return bool_false;
+}
+
+__Z_INLINE bool_t is_usdx_denom_base(const char *denom, uint8_t denom_len)
+{
+    if (tx_is_expert_mode())
+    {
+        return false;
+    }
+
+    if (strlen(USDX_DENOM_BASE) != denom_len)
+    {
+        return bool_false;
+    }
+
+    if (memcmp(denom, USDX_DENOM_BASE, denom_len) == 0)
+        return bool_true;
+
+    return bool_false;
+}
+
+__Z_INLINE bool_t is_atom_denom_base(const char *denom, uint8_t denom_len)
+{
+    if (tx_is_expert_mode())
+    {
+        return false;
+    }
+
+    if (strlen(ATOM_DENOM_BASE) != denom_len)
+    {
+        return bool_false;
+    }
+
+    if (memcmp(denom, ATOM_DENOM_BASE, denom_len) == 0)
+        return bool_true;
+
+    return bool_false;
+}
+
+__Z_INLINE bool_t is_bnb_denom_base(const char *denom, uint8_t denom_len)
+{
+    if (tx_is_expert_mode())
+    {
+        return false;
+    }
+
+    if (strlen(BNB_DENOM_BASE) != denom_len)
+    {
+        return bool_false;
+    }
+
+    if (memcmp(denom, BNB_DENOM_BASE, denom_len) == 0)
+        return bool_true;
+
+    return bool_false;
+}
+
+void convert_denomination(int16_t amountLen,
+                          const char *amountPtr, char bufferUI[160],
+                          const char repr, const uint8_t factor)
+{
+    char tmp[50];
+    if (amountLen < 0 || ((uint16_t)amountLen) >= sizeof(tmp))
+    {
+        return parser_unexpected_error;
+    }
+    MEMZERO(tmp, sizeof(tmp));
+    MEMCPY(tmp, amountPtr, amountLen);
+
+    if (fpstr_to_str(bufferUI, sizeof(tmp), tmp, factor) != 0)
+    {
+        return parser_unexpected_error;
+    }
+
+    const uint16_t formatted_len = strlen(bufferUI);
+    bufferUI[formatted_len] = ' ';
+    MEMCPY(bufferUI + 1 + formatted_len, repr, strlen(repr));
 }
 
 __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
@@ -195,25 +271,22 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
         return parser_unexpected_buffer_end;
     }
 
-    if (is_default_denom_base(denomPtr, denomLen))
+    // replace denominations for tickers if applicable
+    if (is_kava_denom_base(denomPtr, denomLen))
     {
-        // Then we convert denomination
-        char tmp[50];
-        if (amountLen < 0 || ((uint16_t)amountLen) >= sizeof(tmp))
-        {
-            return parser_unexpected_error;
-        }
-        MEMZERO(tmp, sizeof(tmp));
-        MEMCPY(tmp, amountPtr, amountLen);
-
-        if (fpstr_to_str(bufferUI, sizeof(tmp), tmp, COIN_DEFAULT_DENOM_FACTOR) != 0)
-        {
-            return parser_unexpected_error;
-        }
-
-        const uint16_t formatted_len = strlen(bufferUI);
-        bufferUI[formatted_len] = ' ';
-        MEMCPY(bufferUI + 1 + formatted_len, COIN_DEFAULT_DENOM_REPR, strlen(COIN_DEFAULT_DENOM_REPR));
+        convert_denomination(amountLen, amountPtr, bufferUI, KAVA_DENOM_REPR, KAVA_DENOM_FACTOR);
+    }
+    else if (is_usdx_denom_base(denomPtr, denomLen))
+    {
+        convert_denomination(amountLen, amountPtr, bufferUI, USDX_DENOM_REPR, USDX_DENOM_FACTOR);
+    }
+    else if (is_atom_denom_base(denomPtr, denomLen))
+    {
+        convert_denomination(amountLen, amountPtr, bufferUI, ATOM_DENOM_REPR, ATOM_DENOM_FACTOR);
+    }
+    else if (is_bnb_denom_base(denomPtr, denomLen))
+    {
+        convert_denomination(amountLen, amountPtr, bufferUI, BNB_DENOM_REPR, BNB_DENOM_FACTOR);
     }
     else
     {
