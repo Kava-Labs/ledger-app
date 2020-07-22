@@ -25,12 +25,12 @@ MY_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(BOLOS_SDK)/Makefile.defines
 
 # Main app configuration
-APPNAME = "Cosmos"
-APPVERSION_M=2
-APPVERSION_N=16
+APPNAME = "Kava"
+APPVERSION_M=1
+APPVERSION_N=0
 APPVERSION_P=0
 
-APPPATH = "44'/118'"
+APPPATH = "44'/118'"  # TODO: update ?
 APP_LOAD_PARAMS = --appFlags 0x200 --delete $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)

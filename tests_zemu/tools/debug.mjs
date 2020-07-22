@@ -14,7 +14,7 @@ const SIM_OPTIONS = {
 
 const example_tx_str = {
     "account_number": "108",
-    "chain_id": "cosmoshub-3",
+    "chain_id": "kava-3",
     "fee": {
         "amount": [
             {
@@ -29,8 +29,8 @@ const example_tx_str = {
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
+                "delegator_address": "kava19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
+                "validator_address": "kavavaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
             }
         },
         {
@@ -40,8 +40,8 @@ const example_tx_str = {
                     "amount": "20139397",
                     "denom": "uatom"
                 },
-                "delegator_address": "cosmos19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
+                "delegator_address": "kava19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
+                "validator_address": "kavavaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
             }
         }
     ],

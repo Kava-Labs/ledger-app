@@ -19,7 +19,7 @@ jest.setTimeout(30000)
 
 const example_tx_str_basic = {
     "account_number": "108",
-    "chain_id": "cosmoshub-3",
+    "chain_id": "kava-3",
     "fee": {
         "amount": [
             {
@@ -34,15 +34,15 @@ const example_tx_str_basic = {
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
-                "validator_address": "cosmosvaloper1kn3wugetjuy4zetlq6wadchfhvu3x740ae6z6x"
+                "delegator_address": "kava1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
+                "validator_address": "kavavaloper1kn3wugetjuy4zetlq6wadchfhvu3x740ae6z6x"
             }
         },
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
-                "validator_address": "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
+                "delegator_address": "kava1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
+                "validator_address": "kavavaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
             }
         }
     ],
@@ -51,7 +51,7 @@ const example_tx_str_basic = {
 
 const example_tx_str_expert = {
     "account_number": "108",
-    "chain_id": "cosmoshub-2",
+    "chain_id": "kava-3",
     "fee": {
         "amount": [
             {
@@ -66,15 +66,15 @@ const example_tx_str_expert = {
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos1kky4yzth6gdrm8ga5zlfwhav33yr7hl87jycah",
-                "validator_address": "cosmosvaloper1kn3wugetjuy4zetlq6wadchfhvu3x740ae6z6x"
+                "delegator_address": "kava1kky4yzth6gdrm8ga5zlfwhav33yr7hl87jycah",
+                "validator_address": "kavavaloper1kn3wugetjuy4zetlq6wadchfhvu3x740ae6z6x"
             }
         },
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos1kky4yzth6gdrm8ga5zlfwhav33yr7hl87jycah",
-                "validator_address": "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
+                "delegator_address": "kava1kky4yzth6gdrm8ga5zlfwhav33yr7hl87jycah",
+                "validator_address": "kavavaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0"
             }
         }
     ],
@@ -83,7 +83,7 @@ const example_tx_str_expert = {
 
 const example_tx_str_combined = {
     "account_number": "108",
-    "chain_id": "cosmoshub-3",
+    "chain_id": "kava-3",
     "fee": {
         "amount": [
             {
@@ -98,8 +98,8 @@ const example_tx_str_combined = {
         {
             "type": "cosmos-sdk/MsgWithdrawDelegationReward",
             "value": {
-                "delegator_address": "cosmos1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
+                "delegator_address": "kava1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
+                "validator_address": "kavavaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
             }
         },
         {
@@ -109,8 +109,8 @@ const example_tx_str_combined = {
                     "amount": "20139397",
                     "denom": "uatom"
                 },
-                "delegator_address": "cosmos1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
+                "delegator_address": "kava1w34k53py5v5xyluazqpq65agyajavep2rflq6h",
+                "validator_address": "kavavaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
             }
         }
     ],
@@ -199,7 +199,7 @@ describe('Basic checks', function () {
             expect(resp).toHaveProperty("bech32_address");
             expect(resp).toHaveProperty("compressed_pk");
 
-            expect(resp.bech32_address).toEqual("cosmos1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65");
+            expect(resp.bech32_address).toEqual("kava1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65");
             expect(resp.compressed_pk.length).toEqual(33);
         } finally {
             await sim.close();
@@ -249,7 +249,7 @@ describe('Basic checks', function () {
             expect(resp).toHaveProperty("bech32_address");
             expect(resp).toHaveProperty("compressed_pk");
 
-            expect(resp.bech32_address).toEqual("cosmos1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65");
+            expect(resp.bech32_address).toEqual("kava1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65");
             expect(resp.compressed_pk.length).toEqual(33);
         } finally {
             await sim.close();
@@ -316,7 +316,7 @@ describe('Basic checks', function () {
             expect(resp).toHaveProperty("bech32_address");
             expect(resp).toHaveProperty("compressed_pk");
 
-            expect(resp.bech32_address).toEqual("cosmos1ex7gkwwmq4vcgdwcalaq3t20pgwr37u6ntkqzh");
+            expect(resp.bech32_address).toEqual("kava1ex7gkwwmq4vcgdwcalaq3t20pgwr37u6ntkqzh");
             expect(resp.compressed_pk.length).toEqual(33);
         } finally {
             await sim.close();
