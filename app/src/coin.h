@@ -59,7 +59,7 @@ extern "C"
 
 #define USDX_DENOM_BASE "usdx"
 #define USDX_DENOM_REPR "USDX"
-#define USDX_DENOM_FACTOR 2
+#define USDX_DENOM_FACTOR 6
 
 #define ATOM_DENOM_BASE "uatom"
 #define ATOM_DENOM_REPR "ATOM"
@@ -67,7 +67,7 @@ extern "C"
 
 #define BNB_DENOM_BASE "bnb"
 #define BNB_DENOM_REPR "BNB"
-#define BNB_DENOM_FACTOR 6
+#define BNB_DENOM_FACTOR 8
 
 #ifdef __cplusplus
 }

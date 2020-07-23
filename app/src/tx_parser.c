@@ -65,8 +65,6 @@ static const key_subst_t value_substitutions[] = {
     {"bep3/MsgCreateAtomicSwap", "Create Atomic Swap"},
     {"bep3/MsgRefundAtomicSwap", "Refund Atomic Swap"},
     {"bep3/MsgClaimAtomicSwap", "Claim Atomic Swap"},
-    {"bep3/MsgCreateAtomicSwap", "Create Atomic Swap"},
-    {"bep3/MsgRefundAtomicSwap", "Refund Atomic Swap"},
     {"cdp/MsgCreateCDP", "Create CDP"},
     {"cdp/MsgDeposit", "Deposit CDP"},
     {"cdp/MsgWithdraw", "Withdraw CDP"},
