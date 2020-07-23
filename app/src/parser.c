@@ -113,81 +113,27 @@ __Z_INLINE bool_t parser_isAmount(char *key)
     return bool_false;
 }
 
-__Z_INLINE bool_t is_kava_denom_base(const char *denom, uint8_t denom_len)
+__Z_INLINE bool_t is_denom_base(const char *denom, const char *denom_base, uint8_t denom_len)
 {
     if (tx_is_expert_mode())
     {
         return false;
     }
 
-    if (strlen(KAVA_DENOM_BASE) != denom_len)
+    if (strlen(denom_base) != denom_len)
     {
         return bool_false;
     }
 
-    if (memcmp(denom, KAVA_DENOM_BASE, denom_len) == 0)
+    if (memcmp(denom, denom_base, denom_len) == 0)
         return bool_true;
 
     return bool_false;
 }
 
-__Z_INLINE bool_t is_usdx_denom_base(const char *denom, uint8_t denom_len)
-{
-    if (tx_is_expert_mode())
-    {
-        return false;
-    }
-
-    if (strlen(USDX_DENOM_BASE) != denom_len)
-    {
-        return bool_false;
-    }
-
-    if (memcmp(denom, USDX_DENOM_BASE, denom_len) == 0)
-        return bool_true;
-
-    return bool_false;
-}
-
-__Z_INLINE bool_t is_atom_denom_base(const char *denom, uint8_t denom_len)
-{
-    if (tx_is_expert_mode())
-    {
-        return false;
-    }
-
-    if (strlen(ATOM_DENOM_BASE) != denom_len)
-    {
-        return bool_false;
-    }
-
-    if (memcmp(denom, ATOM_DENOM_BASE, denom_len) == 0)
-        return bool_true;
-
-    return bool_false;
-}
-
-__Z_INLINE bool_t is_bnb_denom_base(const char *denom, uint8_t denom_len)
-{
-    if (tx_is_expert_mode())
-    {
-        return false;
-    }
-
-    if (strlen(BNB_DENOM_BASE) != denom_len)
-    {
-        return bool_false;
-    }
-
-    if (memcmp(denom, BNB_DENOM_BASE, denom_len) == 0)
-        return bool_true;
-
-    return bool_false;
-}
-
-void convert_denomination(int16_t amountLen,
-                          const char *amountPtr, char bufferUI[160],
-                          const char repr, const uint8_t factor)
+__Z_INLINE parser_error_t convert_denomination(int16_t amountLen,
+                                               const char *amountPtr, char bufferUI[160],
+                                               const char *repr, const uint8_t factor)
 {
     char tmp[50];
     if (amountLen < 0 || ((uint16_t)amountLen) >= sizeof(tmp))
@@ -205,6 +151,7 @@ void convert_denomination(int16_t amountLen,
     const uint16_t formatted_len = strlen(bufferUI);
     bufferUI[formatted_len] = ' ';
     MEMCPY(bufferUI + 1 + formatted_len, repr, strlen(repr));
+    return parser_ok;
 }
 
 __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
@@ -271,28 +218,36 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
         return parser_unexpected_buffer_end;
     }
 
+    parser_error_t err = parser_ok;
+
     // replace denominations for tickers if applicable
-    if (is_kava_denom_base(denomPtr, denomLen))
+    if (is_denom_base(denomPtr, KAVA_DENOM_BASE, denomLen))
     {
-        convert_denomination(amountLen, amountPtr, bufferUI, KAVA_DENOM_REPR, KAVA_DENOM_FACTOR);
+        err = convert_denomination(amountLen, amountPtr, bufferUI, KAVA_DENOM_REPR, KAVA_DENOM_FACTOR);
     }
-    else if (is_usdx_denom_base(denomPtr, denomLen))
+    else if (is_denom_base(denomPtr, USDX_DENOM_BASE, denomLen))
     {
-        convert_denomination(amountLen, amountPtr, bufferUI, USDX_DENOM_REPR, USDX_DENOM_FACTOR);
+        err = convert_denomination(amountLen, amountPtr, bufferUI, USDX_DENOM_REPR, USDX_DENOM_FACTOR);
     }
-    else if (is_atom_denom_base(denomPtr, denomLen))
+    else if (is_denom_base(denomPtr, ATOM_DENOM_BASE, denomLen))
     {
-        convert_denomination(amountLen, amountPtr, bufferUI, ATOM_DENOM_REPR, ATOM_DENOM_FACTOR);
+        err = convert_denomination(amountLen, amountPtr, bufferUI, ATOM_DENOM_REPR, ATOM_DENOM_FACTOR);
     }
-    else if (is_bnb_denom_base(denomPtr, denomLen))
+    else if (is_denom_base(denomPtr, BNB_DENOM_BASE, denomLen))
     {
-        convert_denomination(amountLen, amountPtr, bufferUI, BNB_DENOM_REPR, BNB_DENOM_FACTOR);
+        err = convert_denomination(amountLen, amountPtr, bufferUI, BNB_DENOM_REPR, BNB_DENOM_FACTOR);
     }
     else
     {
         MEMCPY(bufferUI, amountPtr, amountLen);
         bufferUI[amountLen] = ' ';
         MEMCPY(bufferUI + 1 + amountLen, denomPtr, denomLen);
+    }
+
+    // checke parser error on denomination conversion
+    if (err != parser_ok)
+    {
+        return err;
     }
 
     pageString(outVal, outValLen, bufferUI, pageIdx, pageCount);
