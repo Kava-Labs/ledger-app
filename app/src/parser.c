@@ -244,7 +244,7 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
         MEMCPY(bufferUI + 1 + amountLen, denomPtr, denomLen);
     }
 
-    // checke parser error on denomination conversion
+    // check parser error on denomination conversion
     if (err != parser_ok)
     {
         return err;
