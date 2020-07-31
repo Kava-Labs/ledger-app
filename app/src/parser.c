@@ -237,6 +237,22 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
     {
         err = convert_denomination(amountLen, amountPtr, bufferUI, BNB_DENOM_REPR, BNB_DENOM_FACTOR);
     }
+    else if (is_denom_base(denomPtr, BTCB_DENOM_BASE, denomLen))
+    {
+        err = convert_denomination(amountLen, amountPtr, bufferUI, BTCB_DENOM_REPR, BTCB_DENOM_FACTOR);
+    }
+    else if (is_denom_base(denomPtr, BUSD_DENOM_BASE, denomLen))
+    {
+        err = convert_denomination(amountLen, amountPtr, bufferUI, BUSD_DENOM_REPR, BUSD_DENOM_FACTOR);
+    }
+    else if (is_denom_base(denomPtr, USDC_DENOM_BASE, denomLen))
+    {
+        err = convert_denomination(amountLen, amountPtr, bufferUI, USDC_DENOM_REPR, USDC_DENOM_FACTOR);
+    }
+     else if (is_denom_base(denomPtr, USDT_DENOM_BASE, denomLen))
+    {
+        err = convert_denomination(amountLen, amountPtr, bufferUI, USDT_DENOM_REPR, USDT_DENOM_FACTOR);
+    }
     else
     {
         MEMCPY(bufferUI, amountPtr, amountLen);

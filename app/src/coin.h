@@ -69,6 +69,22 @@ extern "C"
 #define BNB_DENOM_REPR "BNB"
 #define BNB_DENOM_FACTOR 8
 
+#define BTCB_DENOM_BASE "btcb"
+#define BTCB_DENOM_REPR "BTC-B"
+#define BTCB_DENOM_FACTOR 8
+
+#define BUSD_DENOM_BASE "busd"
+#define BUSD_DENOM_REPR "BUSD"
+#define BUSD_DENOM_FACTOR 8
+
+#define USDC_DENOM_BASE "usdc"
+#define USDC_DENOM_REPR "USDC"
+#define USDC_DENOM_FACTOR 6
+
+#define USDT_DENOM_BASE "usdt"
+#define USDT_DENOM_REPR "USDT"
+#define USDT_DENOM_FACTOR 6
+
 #ifdef __cplusplus
 }
 #endif
