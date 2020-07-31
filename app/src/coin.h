@@ -70,7 +70,7 @@ extern "C"
 #define BNB_DENOM_FACTOR 8
 
 #define BTCB_DENOM_BASE "btcb"
-#define BTCB_DENOM_REPR "BTC-B"
+#define BTCB_DENOM_REPR "BTCB"
 #define BTCB_DENOM_FACTOR 8
 
 #define BUSD_DENOM_BASE "busd"
