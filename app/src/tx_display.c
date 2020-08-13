@@ -23,45 +23,50 @@
 
 #define NUM_REQUIRED_ROOT_PAGES 6
 
-const char *get_required_root_item(root_item_e i) {
-    switch (i) {
-        case root_item_chain_id:
-            return "chain_id";
-        case root_item_account_number:
-            return "account_number";
-        case root_item_sequence:
-            return "sequence";
-        case root_item_fee:
-            return "fee";
-        case root_item_memo:
-            return "memo";
-        case root_item_msgs:
-            return "msgs";
-        default:
-            return "?";
+const char *get_required_root_item(root_item_e i)
+{
+    switch (i)
+    {
+    case root_item_chain_id:
+        return "chain_id";
+    case root_item_account_number:
+        return "account_number";
+    case root_item_sequence:
+        return "sequence";
+    case root_item_fee:
+        return "fee";
+    case root_item_memo:
+        return "memo";
+    case root_item_msgs:
+        return "msgs";
+    default:
+        return "?";
     }
 }
 
-__Z_INLINE uint8_t get_root_max_level(root_item_e i) {
-    switch (i) {
-        case root_item_chain_id:
-            return 2;
-        case root_item_account_number:
-            return 2;
-        case root_item_sequence:
-            return 2;
-        case root_item_fee:
-            return 1;
-        case root_item_memo:
-            return 2;
-        case root_item_msgs:
-            return 2;
-        default:
-            return 0;
+__Z_INLINE uint8_t get_root_max_level(root_item_e i)
+{
+    switch (i)
+    {
+    case root_item_chain_id:
+        return 2;
+    case root_item_account_number:
+        return 2;
+    case root_item_sequence:
+        return 2;
+    case root_item_fee:
+        return 1;
+    case root_item_memo:
+        return 2;
+    case root_item_msgs:
+        return 2;
+    default:
+        return 0;
     }
 }
 
-typedef struct {
+typedef struct
+{
     bool root_item_start_token_valid[NUM_REQUIRED_ROOT_PAGES];
     // token where the root_item starts (negative for non-existing)
     uint16_t root_item_start_token_idx[NUM_REQUIRED_ROOT_PAGES];
@@ -76,13 +81,15 @@ typedef struct {
 
 display_cache_t display_cache;
 
-parser_error_t tx_display_readTx(parser_context_t *ctx, const uint8_t *data, size_t dataLen) {
+parser_error_t tx_display_readTx(parser_context_t *ctx, const uint8_t *data, size_t dataLen)
+{
     CHECK_PARSER_ERR(parser_init(ctx, data, dataLen))
     CHECK_PARSER_ERR(_readTx(ctx, &parser_tx_obj))
     return parser_ok;
 }
 
-__Z_INLINE parser_error_t calculate_is_default_chainid() {
+__Z_INLINE parser_error_t calculate_is_default_chainid()
+{
     display_cache.is_default_chain = false;
 
     // get chain_id
@@ -97,15 +104,16 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
 
     uint16_t ret_value_token_index;
     CHECK_PARSER_ERR(tx_traverse_find(
-            display_cache.root_item_start_token_idx[root_item_chain_id],
-            &ret_value_token_index))
+        display_cache.root_item_start_token_idx[root_item_chain_id],
+        &ret_value_token_index))
 
     CHECK_PARSER_ERR(tx_getToken(
-            ret_value_token_index,
-            outVal, sizeof(outVal),
-            0, &pageCount))
+        ret_value_token_index,
+        outVal, sizeof(outVal),
+        0, &pageCount))
 
-    if (strcmp(outVal, COIN_DEFAULT_CHAINID) != 0) {
+    if (strcmp(outVal, COIN_DEFAULT_CHAINID) != 0)
+    {
         // If we don't match the default chainid, switch to expert mode
         display_cache.is_default_chain = true;
     }
@@ -113,18 +121,23 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
     return parser_ok;
 }
 
-__Z_INLINE bool address_matches_own(char *addr) {
-    if (parser_tx_obj.own_addr == NULL) {
+__Z_INLINE bool address_matches_own(char *addr)
+{
+    if (parser_tx_obj.own_addr == NULL)
+    {
         return false;
     }
-    if (strcmp(parser_tx_obj.own_addr, addr) != 0) {
+    if (strcmp(parser_tx_obj.own_addr, addr) != 0)
+    {
         return false;
     }
     return true;
 }
 
-parser_error_t tx_indexRootFields() {
-    if (parser_tx_obj.flags.cache_valid) {
+parser_error_t tx_indexRootFields()
+{
+    if (parser_tx_obj.flags.cache_valid)
+    {
         return parser_ok;
     }
 
@@ -146,16 +159,18 @@ parser_error_t tx_indexRootFields() {
     parser_tx_obj.flags.msg_type_grouping = 1;
     parser_tx_obj.flags.msg_from_grouping = 1;
 
-    for (root_item_e root_item_idx = 0; root_item_idx < NUM_REQUIRED_ROOT_PAGES; root_item_idx++) {
+    for (root_item_e root_item_idx = 0; root_item_idx < NUM_REQUIRED_ROOT_PAGES; root_item_idx++)
+    {
         uint16_t req_root_item_key_token_idx = 0;
 
         parser_error_t err = object_get_value(
-                &parser_tx_obj.json,
-                ROOT_TOKEN_INDEX,
-                get_required_root_item(root_item_idx),
-                &req_root_item_key_token_idx);
+            &parser_tx_obj.json,
+            ROOT_TOKEN_INDEX,
+            get_required_root_item(root_item_idx),
+            &req_root_item_key_token_idx);
 
-        if (err == parser_no_data) {
+        if (err == parser_no_data)
+        {
             continue;
         }
         CHECK_PARSER_ERR(err)
@@ -166,7 +181,8 @@ parser_error_t tx_indexRootFields() {
 
         // Now count how many items can be found in this root item
         int32_t current_item_idx = 0;
-        while (err == parser_ok) {
+        while (err == parser_ok)
+        {
             INIT_QUERY_CONTEXT(tmp_key, sizeof(tmp_key),
                                tmp_val, sizeof(tmp_val),
                                0, get_root_max_level(root_item_idx))
@@ -178,72 +194,84 @@ parser_error_t tx_indexRootFields() {
             uint16_t ret_value_token_index;
 
             err = tx_traverse_find(
-                    display_cache.root_item_start_token_idx[root_item_idx],
-                    &ret_value_token_index);
+                display_cache.root_item_start_token_idx[root_item_idx],
+                &ret_value_token_index);
 
-            if (err != parser_ok) {
+            if (err != parser_ok)
+            {
                 continue;
             }
 
             uint8_t pageCount;
             CHECK_PARSER_ERR(tx_getToken(
-                    ret_value_token_index,
-                    parser_tx_obj.query.out_val,
-                    parser_tx_obj.query.out_key_len,
-                    0, &pageCount))
+                ret_value_token_index,
+                parser_tx_obj.query.out_val,
+                parser_tx_obj.query.out_key_len,
+                0, &pageCount))
 
-            switch (root_item_idx) {
-                case root_item_memo: {
-                    if (strlen(parser_tx_obj.query.out_val) == 0) {
-                        err = parser_query_no_results;
-                        continue;
-                    }
-                    break;
+            switch (root_item_idx)
+            {
+            case root_item_memo:
+            {
+                if (strlen(parser_tx_obj.query.out_val) == 0)
+                {
+                    err = parser_query_no_results;
+                    continue;
                 }
-                case root_item_msgs: {
-                    // GROUPING: Message Type
-                    if (parser_tx_obj.flags.msg_type_grouping && is_msg_type_field(tmp_key)) {
-                        // First message, initialize expected type
-                        if (parser_tx_obj.filter_msg_type_count == 0) {
-                            strcpy(reference_msg_type, tmp_val);
-                            parser_tx_obj.filter_msg_type_valid_idx = current_item_idx;
-                        }
-
-                        if (strcmp(reference_msg_type, tmp_val) != 0) {
-                            // different values, so disable grouping
-                            parser_tx_obj.flags.msg_type_grouping = 0;
-                            parser_tx_obj.filter_msg_type_count = 0;
-                        }
-
-                        parser_tx_obj.filter_msg_type_count++;
+                break;
+            }
+            case root_item_msgs:
+            {
+                // GROUPING: Message Type
+                if (parser_tx_obj.flags.msg_type_grouping && is_msg_type_field(tmp_key))
+                {
+                    // First message, initialize expected type
+                    if (parser_tx_obj.filter_msg_type_count == 0)
+                    {
+                        strcpy(reference_msg_type, tmp_val);
+                        parser_tx_obj.filter_msg_type_valid_idx = current_item_idx;
                     }
 
-                    // GROUPING: Message From
-                    if (parser_tx_obj.flags.msg_from_grouping && is_msg_from_field(tmp_key)) {
-                        // First message, initialize expected from
-                        if (parser_tx_obj.filter_msg_from_count == 0) {
-                            strcpy(reference_msg_from, tmp_val);
-                            parser_tx_obj.filter_msg_from_valid_idx = current_item_idx;
-                        }
-
-                        if (strcmp(reference_msg_from, tmp_val) != 0) {
-                            // different values, so disable grouping
-                            parser_tx_obj.flags.msg_from_grouping = 0;
-                            parser_tx_obj.filter_msg_from_count = 0;
-                        }
-
-                        parser_tx_obj.filter_msg_from_count++;
+                    if (strcmp(reference_msg_type, tmp_val) != 0)
+                    {
+                        // different values, so disable grouping
+                        parser_tx_obj.flags.msg_type_grouping = 0;
+                        parser_tx_obj.filter_msg_type_count = 0;
                     }
+
+                    parser_tx_obj.filter_msg_type_count++;
                 }
-                default:
-                    break;
+
+                // GROUPING: Message From
+                if (parser_tx_obj.flags.msg_from_grouping && is_msg_from_field(tmp_key))
+                {
+                    // First message, initialize expected from
+                    if (parser_tx_obj.filter_msg_from_count == 0)
+                    {
+                        strcpy(reference_msg_from, tmp_val);
+                        parser_tx_obj.filter_msg_from_valid_idx = current_item_idx;
+                    }
+
+                    if (strcmp(reference_msg_from, tmp_val) != 0)
+                    {
+                        // different values, so disable grouping
+                        parser_tx_obj.flags.msg_from_grouping = 0;
+                        parser_tx_obj.filter_msg_from_count = 0;
+                    }
+
+                    parser_tx_obj.filter_msg_from_count++;
+                }
+            }
+            default:
+                break;
             }
 
             display_cache.root_item_number_subitems[root_item_idx]++;
             current_item_idx++;
         }
 
-        if (err != parser_query_no_results && err != parser_no_data) {
+        if (err != parser_query_no_results && err != parser_no_data)
+        {
             return err;
         }
 
@@ -255,104 +283,123 @@ parser_error_t tx_indexRootFields() {
     CHECK_PARSER_ERR(calculate_is_default_chainid());
 
     // turn off grouping if we are not in expert mode
-    if (tx_is_expert_mode()) {
+    if (tx_is_expert_mode())
+    {
         parser_tx_obj.flags.msg_from_grouping = 0;
     }
 
     // check if from reference value matches the device address that will be signing
     parser_tx_obj.flags.msg_from_grouping_hide_all = 0;
-    if (address_matches_own(reference_msg_from)){
+    if (address_matches_own(reference_msg_from))
+    {
         parser_tx_obj.flags.msg_from_grouping_hide_all = 1;
     }
 
     return parser_ok;
 }
 
-__Z_INLINE bool is_default_chainid() {
+__Z_INLINE bool is_default_chainid()
+{
     CHECK_PARSER_ERR(tx_indexRootFields());
     return display_cache.is_default_chain;
 }
 
-bool tx_is_expert_mode() {
+bool tx_is_expert_mode()
+{
     return app_mode_expert() || is_default_chainid();
 }
 
-__Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
+__Z_INLINE uint8_t get_subitem_count(root_item_e root_item)
+{
     CHECK_PARSER_ERR(tx_indexRootFields())
     if (display_cache.total_item_count == 0)
         return 0;
 
     int16_t tmp_num_items = display_cache.root_item_number_subitems[root_item];
 
-    switch (root_item) {
-        case root_item_chain_id:
-        case root_item_sequence:
-        case root_item_account_number:
-            if (!tx_is_expert_mode()) {
-                tmp_num_items = 0;
+    switch (root_item)
+    {
+    case root_item_chain_id:
+    case root_item_sequence:
+    case root_item_account_number:
+        if (!tx_is_expert_mode())
+        {
+            tmp_num_items = 0;
+        }
+        break;
+    case root_item_msgs:
+        // Remove grouped items from list
+        if (parser_tx_obj.flags.msg_type_grouping == 1u && parser_tx_obj.filter_msg_type_count > 0)
+        {
+            tmp_num_items += 1; // we leave main type
+            tmp_num_items -= parser_tx_obj.filter_msg_type_count;
+        }
+        if (parser_tx_obj.flags.msg_from_grouping == 1u && parser_tx_obj.filter_msg_from_count > 0)
+        {
+            if (!parser_tx_obj.flags.msg_from_grouping_hide_all)
+            {
+                tmp_num_items += 1; // we leave main from
             }
-            break;
-        case root_item_msgs:
-            // Remove grouped items from list
-            if (parser_tx_obj.flags.msg_type_grouping == 1u && parser_tx_obj.filter_msg_type_count > 0) {
-                tmp_num_items += 1; // we leave main type
-                tmp_num_items -= parser_tx_obj.filter_msg_type_count;
-            }
-            if (parser_tx_obj.flags.msg_from_grouping == 1u && parser_tx_obj.filter_msg_from_count > 0) {
-                if (!parser_tx_obj.flags.msg_from_grouping_hide_all) {
-                    tmp_num_items += 1; // we leave main from
-                }
-                tmp_num_items -= parser_tx_obj.filter_msg_from_count;
-            }
-            break;
-        case root_item_memo:
-            break;
-        case root_item_fee:
-            if (!tx_is_expert_mode()) {
-                tmp_num_items -= 1;     // Hide Gas field
-            }
-        default:
-            break;
+            tmp_num_items -= parser_tx_obj.filter_msg_from_count;
+        }
+        break;
+    case root_item_memo:
+        break;
+    case root_item_fee:
+        if (!tx_is_expert_mode())
+        {
+            tmp_num_items -= 1; // Hide Gas field
+        }
+    default:
+        break;
     }
 
     return tmp_num_items;
 }
 
-__Z_INLINE parser_error_t retrieve_tree_indexes(uint8_t display_index, root_item_e *root_item, uint8_t *subitem_index) {
+__Z_INLINE parser_error_t retrieve_tree_indexes(uint8_t display_index, root_item_e *root_item, uint8_t *subitem_index)
+{
     // Find root index | display_index idx -> item_index
     // consume indexed subpages until we get the item index in the subpage
     *root_item = 0;
     *subitem_index = 0;
-    while (get_subitem_count(*root_item) == 0) {
+    while (get_subitem_count(*root_item) == 0)
+    {
         (*root_item)++;
     }
 
-    for (uint16_t i = 0; i < display_index; i++) {
+    for (uint16_t i = 0; i < display_index; i++)
+    {
         (*subitem_index)++;
         const uint8_t subitem_count = get_subitem_count(*root_item);
-        if (*subitem_index >= subitem_count) {
+        if (*subitem_index >= subitem_count)
+        {
             // Advance root index and skip empty items
             *subitem_index = 0;
             (*root_item)++;
-            while (get_subitem_count(*root_item) == 0){
+            while (get_subitem_count(*root_item) == 0)
+            {
                 (*root_item)++;
             }
         }
     }
 
-    if (*root_item > NUM_REQUIRED_ROOT_PAGES) {
+    if (*root_item > NUM_REQUIRED_ROOT_PAGES)
+    {
         return parser_no_data;
     }
 
     return parser_ok;
 }
 
-parser_error_t tx_display_numItems(uint8_t *num_items) {
+parser_error_t tx_display_numItems(uint8_t *num_items)
+{
     *num_items = 0;
     CHECK_PARSER_ERR(tx_indexRootFields())
 
     *num_items = 0;
-    for (root_item_e root_item = 0; root_item < NUM_REQUIRED_ROOT_PAGES; root_item++) {
+    for (root_item_e root_item = 0; root_item < NUM_REQUIRED_ROOT_PAGES; root_item++)
+    {
         *num_items += get_subitem_count(root_item);
     }
 
@@ -362,13 +409,15 @@ parser_error_t tx_display_numItems(uint8_t *num_items) {
 // This function assumes that the tx_ctx has been set properly
 parser_error_t tx_display_query(uint16_t displayIdx,
                                 char *outKey, uint16_t outKeyLen,
-                                uint16_t *ret_value_token_index) {
+                                uint16_t *ret_value_token_index)
+{
     CHECK_PARSER_ERR(tx_indexRootFields())
 
     uint8_t num_items;
     CHECK_PARSER_ERR(tx_display_numItems(&num_items));
 
-    if (displayIdx < 0 || displayIdx >= num_items) {
+    if (displayIdx < 0 || displayIdx >= num_items)
+    {
         return parser_display_idx_out_of_range;
     }
 
@@ -385,13 +434,14 @@ parser_error_t tx_display_query(uint16_t displayIdx,
 
     strncpy_s(outKey, get_required_root_item(root_index), outKeyLen);
 
-    if (!display_cache.root_item_start_token_valid[root_index]) {
+    if (!display_cache.root_item_start_token_valid[root_index])
+    {
         return parser_no_data;
     }
 
     CHECK_PARSER_ERR(tx_traverse_find(
-            display_cache.root_item_start_token_idx[root_index],
-            ret_value_token_index))
+        display_cache.root_item_start_token_idx[root_index],
+        ret_value_token_index))
 
     return parser_ok;
 }
@@ -411,67 +461,117 @@ parser_error_t tx_display_query(uint16_t displayIdx,
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const key_subst_t key_substitutions[] = {
-        {"chain_id",                          "Chain ID"},
-        {"account_number",                    "Account"},
-        {"sequence",                          "Sequence"},
-        {"memo",                              "Memo"},
-        {"fee/amount",                        "Fee"},
-        {"fee/gas",                           "Gas"},
-        {"msgs/type",                         "Type"},
+    {"chain_id", "Chain ID"},
+    {"account_number", "Account"},
+    {"sequence", "Sequence"},
+    {"memo", "Memo"},
+    {"fee/amount", "Fee"},
+    {"fee/gas", "Gas"},
+    {"msgs/type", "Type"},
 
-        // FIXME: Are these obsolete?? multisend?
-        {"msgs/inputs/address",               "Source Address"},
-        {"msgs/inputs/coins",                 "Source Coins"},
-        {"msgs/outputs/address",              "Dest Address"},
-        {"msgs/outputs/coins",                "Dest Coins"},
+    // FIXME: Are these obsolete?? multisend?
+    {"msgs/inputs/address", "Source Address"},
+    {"msgs/inputs/coins", "Source Coins"},
+    {"msgs/outputs/address", "Dest Address"},
+    {"msgs/outputs/coins", "Dest Coins"},
 
-        // MsgSend
-        {"msgs/value/from_address",           "From"},
-        {"msgs/value/to_address",             "To"},
-        {"msgs/value/amount",                 "Amount"},
+    // MsgSend
+    {"msgs/value/from_address", "From"},
+    {"msgs/value/to_address", "To"},
+    {"msgs/value/amount", "Amount"},
 
-        // MsgDelegate
-        {"msgs/value/delegator_address",      "Delegator"},
-        {"msgs/value/validator_address",      "Validator"},
+    // MsgDelegate
+    {"msgs/value/delegator_address", "Delegator"},
+    {"msgs/value/validator_address", "Validator"},
 
-        // MsgUndelegate
-//        {"msgs/value/delegator_address", "Delegator"},
-//        {"msgs/value/validator_address", "Validator"},
+    // MsgUndelegate
+    //        {"msgs/value/delegator_address", "Delegator"},
+    //        {"msgs/value/validator_address", "Validator"},
 
-        // MsgBeginRedelegate
-//        {"msgs/value/delegator_address", "Delegator"},
-        {"msgs/value/validator_src_address",  "Validator Source"},
-        {"msgs/value/validator_dst_address",  "Validator Dest"},
+    // MsgBeginRedelegate
+    //        {"msgs/value/delegator_address", "Delegator"},
+    {"msgs/value/validator_src_address", "Validator Source"},
+    {"msgs/value/validator_dst_address", "Validator Dest"},
 
-        // MsgSubmitProposal
-        {"msgs/value/description",            "Description"},
-        {"msgs/value/initial_deposit/amount", "Deposit Amount"},
-        {"msgs/value/initial_deposit/denom",  "Deposit Denom"},
-        {"msgs/value/proposal_type",          "Proposal"},
-        {"msgs/value/proposer",               "Proposer"},
-        {"msgs/value/title",                  "Title"},
+    // MsgSubmitProposal
+    {"msgs/value/description", "Description"},
+    {"msgs/value/initial_deposit/amount", "Deposit Amount"},
+    {"msgs/value/initial_deposit/denom", "Deposit Denom"},
+    {"msgs/value/proposal_type", "Proposal"},
+    {"msgs/value/proposer", "Proposer"},
+    {"msgs/value/title", "Title"},
 
-        // MsgDeposit
-        {"msgs/value/depositer",              "Sender"},
-        {"msgs/value/proposal_id",            "Proposal ID"},
-        {"msgs/value/amount",                 "Amount"},
+    // MsgDeposit
+    {"msgs/value/depositer", "Sender"},
+    {"msgs/value/proposal_id", "Proposal ID"},
+    {"msgs/value/amount", "Amount"},
 
-        // MsgVote
-        {"msgs/value/voter",                  "Description"},
-//        {"msgs/value/proposal_id",              "Proposal ID"},
-        {"msgs/value/option",                 "Option"},
+    // MsgVote
+    {"msgs/value/voter", "Description"},
+    //        {"msgs/value/proposal_id",              "Proposal ID"},
+    {"msgs/value/option", "Option"},
 
-        // MsgWithdrawDelegationReward
-//        {"msgs/value/delegator_address", "Delegator"},      // duplicated
-//        {"msgs/value/validator_address", "Validator"},      // duplicated
+    // MsgWithdrawDelegationReward
+    //        {"msgs/value/delegator_address", "Delegator"},      // duplicated
+    //        {"msgs/value/validator_address", "Validator"},      // duplicated
+
+    // MsgPlaceBid
+    {"msgs/value/auction_id", "Auction ID"},
+    {"msgs/value/bidder", "Bidder"},
+
+    // MsgCreateAtomicSwap
+    {"msgs/value/from", "From"},
+    {"msgs/value/to", "To"},
+    {"msgs/value/recipient_other_chain", "Recipient Other Chain"},
+    {"msgs/value/sender_other_chain", "Sender Other Chain"},
+    {"msgs/value/random_number_hash", "Rand Number Hash"},
+    {"msgs/value/timestamp", "Timestamp"},
+    {"msgs/value/height_span", "Height Span"},
+
+    // MsgClaimAtomicSwap
+    {"msgs/value/swap_id", "Swap ID"},
+    {"msgs/value/random_number", "Random Number"},
+
+    // MsgCreateCDP
+    {"msgs/value/sender", "Sender"},
+    {"msgs/value/collateral", "Collateral"},
+    {"msgs/value/principal", "Principal"},
+
+    // MsgDeposit
+    {"msgs/value/depositor", "Depositor"},
+    {"msgs/value/owner", "Owner"},
+
+    // MsgWithdraw duplicated
+
+    // MsgDrawDebt
+    {"msgs/value/cdp_denom", "CDP Denomination"},
+
+    // MsgDrawDebt
+    {"msgs/value/payment", "Payment"},
+
+    // MsgSubmitProposal
+    {"msgs/value/pub_proposal", "Proposal"},
+    {"msgs/value/committee_id", "Committee ID"},
+
+    // MsgClaimReward
+    {"msgs/value/denom", "Denom"},
+
+    // MsgPostPrice
+    {"msgs/value/market_id", "Market ID"},
+    {"msgs/value/price", "Price"},
+    {"msgs/value/expiry", "Expiry"},
+
 };
 
-parser_error_t tx_display_make_friendly() {
+parser_error_t tx_display_make_friendly()
+{
     CHECK_PARSER_ERR(tx_indexRootFields())
 
     // post process keys
-    for (size_t i = 0; i < array_length(key_substitutions); i++) {
-        if (!strcmp(parser_tx_obj.query.out_key, key_substitutions[i].str1)) {
+    for (size_t i = 0; i < array_length(key_substitutions); i++)
+    {
+        if (!strcmp(parser_tx_obj.query.out_key, key_substitutions[i].str1))
+        {
             strncpy_s(parser_tx_obj.query.out_key, key_substitutions[i].str2, parser_tx_obj.query.out_key_len);
             break;
         }
@@ -479,4 +579,3 @@ parser_error_t tx_display_make_friendly() {
 
     return parser_ok;
 }
-

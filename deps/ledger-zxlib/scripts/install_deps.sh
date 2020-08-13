@@ -19,14 +19,14 @@ os_string="$(uname -s)"
 case "${os_string}" in
 	Linux*)
 		sudo apt-get install libusb-1.0.0 libudev-dev
-		pip install -U setuptools
-		pip install -U --no-cache ledgerblue ecpy
-		pip install -U conan
+		pip3 install -U setuptools
+		pip3 install -U --no-cache ledgerblue ecpy
+		pip3 install -U conan
 		;;
 	Darwin*)
 		brew install libusb
-		pip install -U ledgerblue ecpy
-		pip install -U conan
+		pip3 install -U ledgerblue ecpy
+		pip3 install -U conan
 		;;
 	*)
 		echo "OS not recognized"
