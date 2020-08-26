@@ -112,13 +112,20 @@ __Z_INLINE parser_error_t calculate_is_default_chainid()
         outVal, sizeof(outVal),
         0, &pageCount))
 
-    if (strcmp(outVal, COIN_DEFAULT_CHAINID) != 0)
+    if (has_testnet_chain_id(outVal))
     {
         // If we don't match the default chainid, switch to expert mode
         display_cache.is_default_chain = true;
     }
 
     return parser_ok;
+}
+
+bool has_testnet_chain_id(const char *chain_id)
+{
+    size_t len_prefix = strlen(TESTNET_CHAINID_PREFIX),
+           len_chain_id = strlen(chain_id);
+    return len_chain_id < len_prefix ? false : strcmp(TESTNET_CHAINID_PREFIX, chain_id) == 0;
 }
 
 __Z_INLINE bool address_matches_own(char *addr)
