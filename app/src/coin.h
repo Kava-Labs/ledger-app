@@ -50,7 +50,6 @@ extern "C"
 
 #define CRYPTO_BLOB_SKIP_BYTES 0
 #define TESTNET_CHAINID_PREFIX "kava-testnet"
-#define COIN_DEFAULT_CHAINID "kava-3"
 
     // In non-expert mode, the app will convert from denom base to denom repr
 

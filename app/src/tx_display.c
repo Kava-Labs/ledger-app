@@ -125,7 +125,7 @@ bool has_testnet_chain_id(const char *chain_id)
 {
     size_t len_prefix = strlen(TESTNET_CHAINID_PREFIX),
            len_chain_id = strlen(chain_id);
-    return len_chain_id < len_prefix ? false : strcmp(TESTNET_CHAINID_PREFIX, chain_id) == 0;
+    return len_chain_id < len_prefix ? false : strncmp(TESTNET_CHAINID_PREFIX, chain_id, len_prefix) == 0;
 }
 
 __Z_INLINE bool address_matches_own(char *addr)
